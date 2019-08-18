@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+	<title>DEMO FORM</title>
+	<script type="text/javascript" src="../static/js/jquery-3.4.1.js"></script>
+	<style type="text/css">
+		
+	</style>
+	<script type="text/javascript">
+		var timer;
+		var question_number = 0;
+		var ques_list = {{ data | tojson }};
+		var total_questions = ques_list.length;
+		var answers = [];
+		
+		function myTimer() {
+
+		    var sec = 30;
+		    clearInterval(timer);
+		    timer = setInterval(function() { 
+		    $('#timer').text(sec--);
+		    if (sec == -1) {
+		      clearInterval(timer);
+		      $('#main_content').html("Thanks for participating!!!");
+		     } 
+		    }   , 1000);
+
+		}
+
+		$(document).ready(function(){
+		    myTimer();
+		    $('#question').text(ques_list[question_number]);
+			question_number += 1;
+		});
+		
+		function nextQues(){
+			if(question_number == total_questions){
+				var ans = $('.option:checked').val();
+				answers.push(ans);
+				submit();
+				$('#main_content').html("Thanks for participating!!!");
+			}
+			else{
+				var ans = $('.option:checked').val();
+				answers.push(ans);
+				$('.option').prop('checked', false);
+				myTimer();
+				$('#question').text(ques_list[question_number]);
+				question_number += 1;
+			}
+		}
+
+		function submit(){
+			$.ajax({
+			  type: 'POST',
+			  url: "/parse_data",
+			  data: JSON.stringify({answers}),
+			  contentType: "application/json;charset=utf-8",
+			  dataType: "json",
+			  success: function(res){
+			    // do something with the received data
+			  }
+			});
+		}
+	</script>
+</head>
+<body>
+	{% block content %}
+	<div id='main_content'>
+	<div><b>Timer</b> <span id="timer"></span> seconds!</div>
+	<br>
+	<span style="text-decoration: underline;">NOTE: Please select one option to go to next question.</span>
+	<br>
+	<br>
+	<span id='question'></span>
+	<br>
+		{% for res in responses %}
+				<br>
+                <input type="radio" name="option" class="option" onclick="nextQues(this)" value="{{res}}" > {{res}}
+                <br>
+                
+		{% endfor %}
+	</div>
+	{% endblock %}
+</body>
+</html>
