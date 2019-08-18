@@ -35,6 +35,7 @@ def parse_data():
     if request.method == "POST":
     	data = request.get_json()
     	print(data['answers'])
+    	return 'Success'
 
 if __name__ == '__main__':
     app.run()
