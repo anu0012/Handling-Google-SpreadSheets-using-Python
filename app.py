@@ -16,7 +16,7 @@ def home():
 	# Find a workbook by name and open the first sheet
 	# Make sure you use the right name here.
 	sheet = client.open("Copy of Sample Pair Sheet").sheet1
-	list_of_rows = sheet.get_all_values()
+	list_of_rows = list(zip(sheet.col_values(1), sheet.col_values(2)))
 
 	responses = ['Almost always available', 'Sometimes available', 'Never available',
 	 'Not a specific product', 'Not Sure/Can\'t Determine']
