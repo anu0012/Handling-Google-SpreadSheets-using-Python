@@ -29,6 +29,18 @@ def parse_data():
     if request.method == "POST":
     	data = request.get_json()
     	print(data['answers'])
+    	scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+    	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+    	client = gspread.authorize(creds)
+    	sheet = client.open("Copy of Sample Pair Sheet").sheet1
+    	# check for empty column
+    	colno = 1
+    	while sheet.cell(1, colno).value != '':
+    		colno += 1
+
+    	# INSERT ANSWERS IN EMPTY COLUMN
+    	for i in range(len(data['answers'])):
+    		sheet.update_cell(i+1, colno, data['answers'][i])
     	return 'Success'
 
 if __name__ == '__main__':
